@@ -290,7 +290,9 @@ footer{border-top:1px solid var(--border);padding:34px 0;background:rgba(9,13,22
 @media(max-width:560px){
   .section{padding:78px 0}
   .skills-grid,.contact-grid{grid-template-columns:1fr}
-  .hero-cta .btn{flex:1;justify-content:center}
+  /* full-width stacked CTAs — side by side squeezes the labels onto two lines */
+  .hero-cta{flex-direction:column}
+  .hero-cta .btn{width:100%;justify-content:center;white-space:nowrap}
   .stat b{font-size:1.35rem}
 }
 
@@ -543,7 +545,7 @@ footer{border-top:1px solid var(--border);padding:34px 0;background:rgba(9,13,22
 
       <article class="proj glass reveal" style="--d:.1s">
         <div class="proj-top"><span class="proj-index">/ 02</span><span class="proj-flag flag-nda">Private · NDA</span></div>
-        <h3>Freebuff HR — Payroll &amp; HRM Suite</h3>
+        <h3>Enterprise HRM &amp; Payroll Suite</h3>
         <div class="sub">Multi-tenant enterprise HR platform · production system</div>
         <ul>
           <li>Laravel 11 monolith with Inertia.js SPA (Vue/React components, TailwindCSS) for Head Office &amp; Employee portals.</li>
