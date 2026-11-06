@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>document.documentElement.classList.add('js');</script>
+<title>Enterprise POS System — System Architecture</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2338BDF8'/%3E%3Cstop offset='1' stop-color='%23A855F7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230F172A'/%3E%3Crect x='1.5' y='1.5' width='61' height='61' rx='13' fill='none' stroke='url(%23g)' stroke-width='3'/%3E%3Ctext x='32' y='44' font-family='Arial' font-size='32' font-weight='700' text-anchor='middle' fill='url(%23g)'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0F172A;--surface:rgba(30,41,59,.55);--card:rgba(15,23,42,.55);--border:rgba(148,163,184,.15);
+--text:#F8FAFC;--muted:#94A3B8;--cyan:#38BDF8;--indigo:#6366F1;--purple:#A855F7;--teal:#2DD4BF;
+--amber:#F59E0B;--slate:#64748B;--grad:linear-gradient(135deg,#38BDF8,#6366F1 55%,#A855F7);
+--font-head:'Sora',system-ui,sans-serif;--font-body:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden;padding-bottom:70px}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+background-image:linear-gradient(rgba(148,163,184,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.055) 1px,transparent 1px);
+background-size:56px 56px;-webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.8),transparent 55%);mask-image:linear-gradient(to bottom,rgba(0,0,0,.8),transparent 55%)}
+.blob{position:fixed;border-radius:50%;filter:blur(95px);z-index:-2;pointer-events:none}
+.b1{width:480px;height:480px;top:-160px;left:-120px;background:radial-gradient(circle,rgba(56,189,248,.25),transparent 65%)}
+.b2{width:460px;height:460px;bottom:-160px;right:-140px;background:radial-gradient(circle,rgba(168,85,247,.22),transparent 65%)}
+.container{max-width:1150px;margin:0 auto;padding:0 22px}
+.mono{font-family:var(--font-mono)}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;
+padding:14px 22px;background:rgba(9,13,22,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.topbar a{color:var(--cyan);font-family:var(--font-mono);font-size:13px;text-decoration:none;padding:12px 4px}
+.topbar a:hover{color:#7DD3FC}
+.printbtn{font-family:var(--font-mono);font-size:12px;color:var(--muted);background:rgba(148,163,184,.07);
+border:1px solid var(--border);border-radius:9px;padding:8px 14px;cursor:pointer;transition:.2s}
+.printbtn:hover{color:var(--text);border-color:rgba(56,189,248,.5)}
+.hero{padding:64px 0 12px}
+.crumb{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.crumb::after{content:"";width:120px;height:1px;background:linear-gradient(90deg,rgba(56,189,248,.5),transparent)}
+h1{font-family:var(--font-head);font-size:clamp(1.9rem,4.5vw,2.9rem);font-weight:800;letter-spacing:-.02em;line-height:1.12;margin-bottom:12px}
+.grad-text{color:var(--cyan)}/* anti-slop: solid accent, no gradient text */
+.lead{color:var(--muted);font-size:15.5px;max-width:660px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:5px 12px;border-radius:999px;
+background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);color:#7DD3FC}
+.chip.i{background:rgba(99,102,241,.1);border-color:rgba(129,140,248,.35);color:#A5B4FC}
+.chip.t{background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.3);color:#5EEAD4}
+.chip.p{background:rgba(168,85,247,.1);border-color:rgba(192,132,252,.35);color:#D8B4FE}
+.layer{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--ac);
+border-radius:16px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow:hidden}
+.layer-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;background:var(--tint)}
+.layer-head h2{font-family:var(--font-head);font-size:15px;letter-spacing:.09em;color:var(--ac-l)}
+.layer-head span{font-family:var(--font-mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.layer-body{padding:22px}
+.layer-body h3{font-family:var(--font-head);font-size:16px;margin-bottom:16px;color:#E2E8F0}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.cards.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cards.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:17px;min-width:0}
+.card h4{font-family:var(--font-head);font-size:13.5px;color:#E2E8F0;margin-bottom:10px;text-align:center}
+.card ul{list-style:none}
+.card li{font-size:13.5px;color:var(--muted);padding-left:16px;position:relative;margin:6px 0}
+.card li::before{content:"▸";position:absolute;left:0;color:var(--ac)}
+.card p{font-size:13px;color:var(--muted);text-align:center}
+.card.focus{border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.06)}
+.card.tx{border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.05)}
+.card.shared{border-color:rgba(129,140,248,.35);background:rgba(99,102,241,.06)}
+.flow{display:flex;align-items:center;justify-content:center;gap:14px;margin:16px 0;
+font-family:var(--font-mono);font-size:15px;color:var(--cyan)}
+.flow i{font-style:normal;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+html.js .reveal{opacity:0;transform:translateY(22px);transition:.65s ease}
+html.js .reveal.in{opacity:1;transform:none}
+footer{position:fixed;bottom:0;left:0;right:0;padding:13px 22px;text-align:center;
+background:rgba(9,13,22,.85);backdrop-filter:blur(14px);border-top:1px solid var(--border);font-family:var(--font-mono);font-size:11.5px;color:var(--muted)}
+footer a{color:var(--cyan);text-decoration:none}
+@media(max-width:900px){.cards.four{grid-template-columns:repeat(2,1fr)}.cards,.cards.two{grid-template-columns:1fr}}
+@media(max-width:620px){.cards.four{grid-template-columns:1fr}}
+@media(max-width:900px){
+/* the fixed footer wraps to two lines here — reserve enough room so it never covers the last card */
+body{padding-bottom:96px}}
+@media print{
+ body{background:#fff;color:#1e293b;padding-bottom:0}
+ body::after,.blob,footer,.topbar .printbtn{display:none}
+ .topbar{position:static;background:#fff;border-color:#e2e8f0}
+ .topbar a{color:#2563eb}
+ .grad-text{color:#0369A1}
+ h1,.layer-body h3,.card h4{color:#0f172a}
+ .lead,.card li,.card p,.layer-head span{color:#475569}
+ .layer,.card{background:#fff;border-color:#e2e8f0;backdrop-filter:none}
+ .layer{break-inside:avoid;border-top-width:4px}
+ .card.focus{border-color:#93c5fd;background:#eff6ff}
+ .card.tx{border-color:#fdba74;background:#fff7ed}
+ .card.shared{border-color:#c4b5fd;background:#f5f3ff}
+ .chip{background:#eef2ff;border-color:#c7d2fe;color:#4338ca}
+ .crumb{color:#2563eb}.flow{color:#2563eb}
+ html.js .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div>
+<div class="topbar">
+  <a href="index.html">← sazzad.dev / portfolio</a>
+  <button class="printbtn" onclick="window.print()">⎙ Print / Save PDF</button>
+</div>
+
+<header class="hero container">
+  <div class="crumb mono">System Architecture · Case Study</div>
+  <h1>Enterprise POS <span class="grad-text">&amp; Retail ERP</span></h1>
+  <p class="lead">A multi-branch retail operating platform for a private conglomerate — Head Office and Showroom operations unified over a transactional ledger core, built for atomic financial integrity.</p>
+  <div class="meta">
+    <span class="chip">Laravel 11</span><span class="chip i">Livewire 3</span><span class="chip">Alpine.js</span>
+    <span class="chip t">Tailwind CSS</span><span class="chip">MySQL 8.0+</span><span class="chip p">Vite</span>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="layer reveal" style="--ac:#38BDF8;--ac-l:#7DD3FC;--tint:rgba(56,189,248,.07)">
+    <div class="layer-head"><h2>PRESENTATION LAYER</h2><span>LAYER 01</span></div>
+    <div class="layer-body">
+      <h3>SPA-feel Interface over Livewire</h3>
+      <div class="cards">
+        <div class="card focus"><h4>Vite Assets</h4><ul><li>JavaScript</li><li>CSS</li></ul></div>
+        <div class="card focus"><h4>Livewire</h4><ul><li>Livewire Components</li></ul></div>
+        <div class="card focus"><h4>Tailwind CSS</h4><ul><li>CSS Framework</li></ul></div>
+      </div>
+      <div class="flow"><i>↓</i></div>
+      <div class="card focus"><h4>SPA · Inertia-style Interactivity</h4>
+        <div class="cards two" style="margin-top:6px">
+          <p><b style="color:#E2E8F0">Head Office Pages</b></p>
+          <p><b style="color:#E2E8F0">Showroom Pages</b></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flow"><i>↓</i></div>
+
+  <section class="layer reveal" style="--ac:#A855F7;--ac-l:#D8B4FE;--tint:rgba(168,85,247,.08)">
+    <div class="layer-head"><h2>API LAYER</h2><span>LAYER 02</span></div>
+    <div class="layer-body">
+      <h3>Segmented Route Surface</h3>
+      <div class="cards">
+        <div class="card"><h4>Head Office API</h4><p class="mono">api/headoffice</p></div>
+        <div class="card"><h4>Showroom API</h4><p>Showroom endpoints</p></div>
+        <div class="card"><h4>Web Routes</h4><p>Public routes</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flow"><i>↓</i></div>
+
+  <section class="layer reveal" style="--ac:#2DD4BF;--ac-l:#5EEAD4;--tint:rgba(45,212,191,.07)">
+    <div class="layer-head"><h2>BUSINESS LOGIC LAYER</h2><span>LAYER 03</span></div>
+    <div class="layer-body">
+      <h3>Services, Middleware &amp; Policies</h3>
+      <div class="cards">
+        <div class="card"><h4>Services</h4>
+          <ul><li><b>InvoicePdf</b></li><li><b>ExpenseCategoryService</b></li>
+          <li><b>InventoryReportService</b></li><li><b>ShowroomIncomeStatementService</b></li>
+          <li><b>OrderNowService</b></li></ul></div>
+        <div class="card"><h4>Middleware</h4>
+          <ul><li><b>Branch Check</b></li><li><b>CheckBranchType</b></li></ul></div>
+        <div class="card"><h4>Policies</h4>
+          <ul><li><b>ExpenseCategoryPolicy</b></li><li><b>ShowroomSalePolicy</b></li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flow"><i>↓</i></div>
+
+  <section class="layer reveal" style="--ac:#F59E0B;--ac-l:#FCD34D;--tint:rgba(245,158,11,.08)">
+    <div class="layer-head"><h2>DATA LAYER</h2><span>LAYER 04</span></div>
+    <div class="layer-body">
+      <h3>35-Table Multi-Warehouse Schema</h3>
+      <div class="cards">
+        <div class="card"><h4>Eloquent ORM</h4><p>PHP ActiveRecord</p></div>
+        <div class="card"><h4>Migrations &amp; Seeders</h4><p>Structure &amp; initial data</p></div>
+        <div class="card"><h4>Models</h4><p>Application data models</p></div>
+      </div>
+      <div class="flow"><i>↓</i></div>
+      <div class="cards four">
+        <div class="card focus"><h4>HEAD OFFICE</h4>
+          <ul><li>Products</li><li>Categories</li><li>Suppliers</li><li>Purchases</li><li>Sales</li><li>Chalans</li></ul></div>
+        <div class="card tx"><h4>SHOWROOM</h4>
+          <ul><li>Products</li><li>Sales</li><li>Customers</li><li>Deposits</li><li>Withdrawals</li><li>Expenses</li></ul></div>
+        <div class="card shared"><h4>SHARED / BASE</h4>
+          <ul><li>Users</li><li>Branches</li><li>Settings</li></ul></div>
+        <div class="card tx"><h4>TRANSACTION</h4>
+          <ul><li>Cashbook</li><li>Ledger</li><li>Stock</li><li>Transfers</li><li>Deposits</li><li>Withdrawals</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flow"><i>↓</i></div>
+
+  <section class="layer reveal" style="--ac:#64748B;--ac-l:#CBD5E1;--tint:rgba(100,116,139,.12)">
+    <div class="layer-head"><h2>INFRASTRUCTURE LAYER</h2><span>LAYER 05</span></div>
+    <div class="layer-body">
+      <h3>Runtime &amp; Optimization</h3>
+      <div class="cards">
+        <div class="card"><h4>Cache</h4><p>Daily cache</p></div>
+        <div class="card"><h4>Session</h4><p>Database session</p></div>
+        <div class="card"><h4>Queue</h4><p>Database queue</p></div>
+      </div>
+      <div class="flow"><i>↓</i></div>
+      <div class="cards four">
+        <div class="card"><h4>Config Cache</h4></div>
+        <div class="card"><h4>Route Cache</h4></div>
+        <div class="card"><h4>View Cache</h4></div>
+        <div class="card"><h4>Optimize</h4></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Enterprise POS &amp; Retail ERP — five-layer architecture · engineered by <a href="index.html">T. M. Sazzad Hossain</a></footer>
+<script>
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
