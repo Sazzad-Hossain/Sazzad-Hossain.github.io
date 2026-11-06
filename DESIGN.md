@@ -36,7 +36,7 @@ MUST respect prefers-reduced-motion (already implemented)
 Inline SVG only, stroke 2, currentColor, 17–22px
 Primary btn = gradient bg + white text + glow · Ghost = glass + border, hover → cyan
 
-## Anti-slop policy (MANDATORY — Impeccable / Vercel WIG)
+## Design anti-patterns (MANDATORY)
 - Gradient TEXT is forbidden anywhere (headlines, numbers, links, footer).
 - Accent pattern: solid #F8FAFC headline + ONE word in solid #38BDF8 (.grad-text renders this).
 - Gradients allowed ONLY on: primary button bg, logo mark, progress bar, timeline, card top border.

@@ -9,7 +9,7 @@
 - Read ./DESIGN.md before any UI change. Use ONLY tokens defined there.
 - Colors/fonts/radii change centrally in :root — never hardcode inline values.
 
-## Quality rules (Impeccable + Vercel Web Interface Guidelines)
+## Quality rules (Vercel Web Interface Guidelines)
 - Gradient text is forbidden; accent color is always SOLID var(--cyan)
   (.grad-text class does this — do not reintroduce background-clip:text)
 - Min hit target 24×24px; 44×44px for primary CTAs on mobile
@@ -20,7 +20,7 @@
 - Async actions must show a pending state (none exist currently — mailto/tel links only)
 - Reveal animations must be gated behind html.js — a JS error must never hide content
 
-## QA loop (Playwright MCP)
+## QA loop
 - After any change: screenshot at 1440px AND 375px viewport
 - Verify: no overflow, no text overlap, nav works, arch pages print-clean
 
