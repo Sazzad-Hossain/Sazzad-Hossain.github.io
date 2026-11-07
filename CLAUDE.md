@@ -25,4 +25,4 @@
 - Verify: no overflow, no text overlap, nav works, arch pages print-clean
 
 ## Deploy
-- Netlify Drop / GitHub Pages (Sazzad-Hossain.github.io). Static — never add a build step.
+- Netlify Drop / GitHub Pages (tm-sazzad-hossain.github.io). Static — never add a build step.
