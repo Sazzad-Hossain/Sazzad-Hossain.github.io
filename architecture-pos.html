@@ -66,6 +66,7 @@ border-radius:16px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)
 .card li{font-size:13.5px;color:var(--muted);padding-left:16px;position:relative;margin:6px 0}
 .card li::before{content:"▸";position:absolute;left:0;color:var(--ac)}
 .card p{font-size:13px;color:var(--muted);text-align:center}
+.card p b{color:#E2E8F0}
 .card.focus{border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.06)}
 .card.tx{border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.05)}
 .card.shared{border-color:rgba(129,140,248,.35);background:rgba(99,102,241,.06)}
@@ -92,12 +93,16 @@ body{padding-bottom:96px}}
  .grad-text{color:#0369A1}
  h1,.layer-body h3,.card h4{color:#0f172a}
  .lead,.card li,.card p,.layer-head span{color:#475569}
+ .card p b{color:#0f172a}
  .layer,.card{background:#fff;border-color:#e2e8f0;backdrop-filter:none}
  .layer{break-inside:avoid;border-top-width:4px}
  .card.focus{border-color:#93c5fd;background:#eff6ff}
  .card.tx{border-color:#fdba74;background:#fff7ed}
  .card.shared{border-color:#c4b5fd;background:#f5f3ff}
  .chip{background:#eef2ff;border-color:#c7d2fe;color:#4338ca}
+ .chip.t{background:#ecfdf5;border-color:#a7f3d0;color:#047857}
+ .chip.i{background:#eef2ff;border-color:#c7d2fe;color:#4338ca}
+ .chip.p{background:#f5f3ff;border-color:#ddd6fe;color:#6d28d9}
  .crumb{color:#2563eb}.flow{color:#2563eb}
  html.js .reveal{opacity:1;transform:none}
 }
@@ -134,8 +139,8 @@ body{padding-bottom:96px}}
       <div class="flow"><i>↓</i></div>
       <div class="card focus"><h4>SPA · Inertia-style Interactivity</h4>
         <div class="cards two" style="margin-top:6px">
-          <p><b style="color:#E2E8F0">Head Office Pages</b></p>
-          <p><b style="color:#E2E8F0">Showroom Pages</b></p>
+          <p><b>Head Office Pages</b></p>
+          <p><b>Showroom Pages</b></p>
         </div>
       </div>
     </div>
